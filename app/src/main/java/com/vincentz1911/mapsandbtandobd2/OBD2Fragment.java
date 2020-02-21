@@ -1,5 +1,6 @@
 package com.vincentz1911.mapsandbtandobd2;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -33,22 +34,24 @@ import com.vincentz1911.mapsandbtandobd2.obd.commands.temperature.*;
 public class OBD2Fragment extends Fragment {
 
     private String speed, rpm, fuelLevel, oilTemp, consumption;
-    private TextView txt_speed, txt_rpm;
+    private TextView txt_speed, txt_rpm, txt_oilTemp, txt_fuelLevel, txt_consumption;
     private Thread getInfoThread, updateInfoThread;
     private SharedPreferences sharedPref;
     private String deviceAddress;
     private BluetoothSocket socket = null;
+    private Activity activity;
 
     public OBD2Fragment() {
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_obd2, container, false);
-        txt_speed = view.findViewById(R.id.txt_speed);
-        txt_rpm = view.findViewById(R.id.txt_rpm);
+        activity = getActivity();
+        init(view);
 
-        sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         deviceAddress = sharedPref.getString("btaddress", "");
         //if (deviceAddress.equals(""))
         getBluetoothDevice();
@@ -57,25 +60,24 @@ public class OBD2Fragment extends Fragment {
             public void run() {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
-                        Thread.sleep(100);
+                        //Thread.sleep(100);
                         RPMCommand engineRpmCommand = new RPMCommand();
                         SpeedCommand speedCommand = new SpeedCommand();
-
                         OilTempCommand oilTempCommand = new OilTempCommand();
                         ConsumptionRateCommand consumptionRateCommand = new ConsumptionRateCommand();
                         FuelLevelCommand fuelLevelCommand = new FuelLevelCommand();
 
-                        fuelLevelCommand.run(socket.getInputStream(), socket.getOutputStream());
-                        consumptionRateCommand.run(socket.getInputStream(), socket.getOutputStream());
-                        oilTempCommand.run(socket.getInputStream(), socket.getOutputStream());
                         engineRpmCommand.run(socket.getInputStream(), socket.getOutputStream());
                         speedCommand.run(socket.getInputStream(), socket.getOutputStream());
+                        oilTempCommand.run(socket.getInputStream(), socket.getOutputStream());
+                        consumptionRateCommand.run(socket.getInputStream(), socket.getOutputStream());
+                        fuelLevelCommand.run(socket.getInputStream(), socket.getOutputStream());
 
+                        rpm = engineRpmCommand.getFormattedResult();
+                        speed = speedCommand.getFormattedResult();
+                        oilTemp = oilTempCommand.getFormattedResult();
                         consumption = consumptionRateCommand.getFormattedResult();
                         fuelLevel = fuelLevelCommand.getFormattedResult();
-                        oilTemp = oilTempCommand.getFormattedResult();
-                        speed = speedCommand.getFormattedResult();
-                        rpm = engineRpmCommand.getFormattedResult();
                     }
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
@@ -89,18 +91,14 @@ public class OBD2Fragment extends Fragment {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
                         Thread.sleep(100);
-                        getActivity().runOnUiThread(new Runnable() {
+                        activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 txt_speed.setText("speed: " + speed);
                                 txt_rpm.setText("rpm: " + rpm);
-
-                                ((TextView)view.findViewById(R.id.txt_oiltemp)).setText(oilTemp);
-                                ((TextView)view.findViewById(R.id.txt_fuellevel)).setText(fuelLevel);
-                                ((TextView)view.findViewById(R.id.txt_consumption)).setText(consumption);
-
-
-                                // update TextView here!
+                                txt_oilTemp.setText("Oil Temp: " + oilTemp);
+                                txt_fuelLevel.setText("Fuel Level: " + fuelLevel);
+                                txt_consumption.setText("Consumption" + consumption);
                             }
                         });
                     }
@@ -110,6 +108,14 @@ public class OBD2Fragment extends Fragment {
             }
         };
         return view;
+    }
+
+    private void init(View view) {
+        txt_speed = view.findViewById(R.id.txt_speed);
+        txt_rpm = view.findViewById(R.id.txt_rpm);
+        txt_oilTemp = view.findViewById(R.id.txt_oiltemp);
+        txt_fuelLevel = view.findViewById(R.id.txt_fuellevel);
+        txt_consumption = view.findViewById(R.id.txt_consumption);
     }
 
     private void getBluetoothDevice() {
@@ -126,9 +132,9 @@ public class OBD2Fragment extends Fragment {
         }
 
         // show list
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
                 android.R.layout.select_dialog_singlechoice, deviceStrs.toArray(new String[0]));
 
         alertDialog.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
