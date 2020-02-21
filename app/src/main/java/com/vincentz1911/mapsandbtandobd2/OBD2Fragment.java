@@ -44,7 +44,7 @@ public class OBD2Fragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_obd2, container, false);
+        final View view = inflater.inflate(R.layout.fragment_obd2, container, false);
         txt_speed = view.findViewById(R.id.txt_speed);
         txt_rpm = view.findViewById(R.id.txt_rpm);
 
@@ -94,6 +94,12 @@ public class OBD2Fragment extends Fragment {
                             public void run() {
                                 txt_speed.setText("speed: " + speed);
                                 txt_rpm.setText("rpm: " + rpm);
+
+                                ((TextView)view.findViewById(R.id.txt_oiltemp)).setText(oilTemp);
+                                ((TextView)view.findViewById(R.id.txt_fuellevel)).setText(fuelLevel);
+                                ((TextView)view.findViewById(R.id.txt_consumption)).setText(consumption);
+
+
                                 // update TextView here!
                             }
                         });
