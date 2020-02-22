@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -78,6 +79,18 @@ public class OBD2Fragment extends Fragment {
                         oilTemp = oilTempCommand.getFormattedResult();
                         consumption = consumptionRateCommand.getFormattedResult();
                         fuelLevel = fuelLevelCommand.getFormattedResult();
+
+
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txt_speed.setText("speed: " + speed);
+                                txt_rpm.setText("rpm: " + rpm);
+                                txt_oilTemp.setText("Oil Temp: " + oilTemp);
+                                txt_fuelLevel.setText("Fuel Level: " + fuelLevel);
+                                txt_consumption.setText("Consumption" + consumption);
+                            }
+                        });
                     }
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
@@ -128,6 +141,14 @@ public class OBD2Fragment extends Fragment {
             for (BluetoothDevice device : pairedDevices) {
                 deviceStrs.add(device.getName() + "\n" + device.getAddress());
                 devices.add(device.getAddress());
+                if (device.getName().toUpperCase().equals("OBDII")) {
+                    Toast.makeText(activity,
+                            "Bluetooth OBDII device found: " + device.getName(),
+                            Toast.LENGTH_LONG).show();
+                    deviceAddress = device.getAddress();
+                    sharedPref.edit().putString("btaddress", deviceAddress).apply();
+                    return;
+                }
             }
         }
 
@@ -163,7 +184,7 @@ public class OBD2Fragment extends Fragment {
         }
 
         getInfoThread.start();
-        updateInfoThread.start();
+       // updateInfoThread.start();
     }
 }
 

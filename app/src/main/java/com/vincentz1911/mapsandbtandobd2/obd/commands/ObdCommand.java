@@ -201,7 +201,7 @@ public abstract class ObdCommand {
      * @throws IOException if any.
      */
     protected void readRawData(InputStream in) throws IOException {
-        byte b = 0;
+        byte b;
         StringBuilder res = new StringBuilder();
 
         // read until '>' arrives OR end of stream reached
@@ -242,11 +242,7 @@ public abstract class ObdCommand {
             try {
                 messageError = errorClass.newInstance();
                 messageError.setCommand(this.cmd);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InstantiationException | IllegalAccessException e) { throw new RuntimeException(e); }
 
             if (messageError.isError(rawData)) {
                 throw messageError;
