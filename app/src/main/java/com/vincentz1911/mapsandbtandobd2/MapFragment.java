@@ -29,7 +29,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap map;
     private float bearing = 0;
 
-    public MapFragment() { }
+    public MapFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup vg, Bundle savedInstanceState) {
@@ -41,39 +42,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
-//    private void locationUpdates() {
-//        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED
-//                && activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            msg("Permission is required for location");
-//            Tools.checkPermissions(activity);
-//            return;
-//        }
-//        if (lm != null) lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-//                2000,3, GPSlistener);
-//    }
-
-//    private void msg(final String text) {
-//        activity.runOnUiThread(new Runnable() {
-//            public void run() {
-//                Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 && activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Tools.msg(activity,"Permission is required for location");
+            Tools.msg(activity, "Permission is required for location");
             Tools.checkPermissions(activity);
             return;
         }
+
         map = googleMap;
-//        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.setMapStyle(new MapStyleOptions(getString(R.string.json_mapstyle)));
         map.setBuildingsEnabled(true);
         map.setTrafficEnabled(true);
@@ -85,6 +66,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mUiSettings.setMyLocationButtonEnabled(true);
 
         LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        if (lm == null) return;
         Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         LatLng pos = last != null ? new LatLng(last.getLatitude(), last.getLongitude()) : null;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
@@ -108,20 +90,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     .bearing(bearing)
                     .tilt(70)
                     .build();
-            if (map != null)
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
+        public void onStatusChanged(String provider, int status, Bundle extras) { }
         @Override
-        public void onProviderEnabled(String provider) {
-        }
-
+        public void onProviderEnabled(String provider) { }
         @Override
-        public void onProviderDisabled(String provider) {
-        }
+        public void onProviderDisabled(String provider) { }
     };
 }

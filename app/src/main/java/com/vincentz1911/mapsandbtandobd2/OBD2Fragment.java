@@ -50,17 +50,17 @@ public class OBD2Fragment extends Fragment {
                 speedCommand.run(socket.getInputStream(), socket.getOutputStream());
                 speed = speedCommand.getFormattedResult();
 
-                OilTempCommand oilTempCommand = new OilTempCommand();
-                oilTempCommand.run(socket.getInputStream(), socket.getOutputStream());
-                oilTemp = oilTempCommand.getFormattedResult();
-
-                ConsumptionRateCommand consumptionRateCommand = new ConsumptionRateCommand();
-                consumptionRateCommand.run(socket.getInputStream(), socket.getOutputStream());
-                consumption = consumptionRateCommand.getFormattedResult();
-
-                FuelLevelCommand fuelLevelCommand = new FuelLevelCommand();
-                fuelLevelCommand.run(socket.getInputStream(), socket.getOutputStream());
-                fuelLevel = fuelLevelCommand.getFormattedResult();
+//                OilTempCommand oilTempCommand = new OilTempCommand();
+//                oilTempCommand.run(socket.getInputStream(), socket.getOutputStream());
+//                oilTemp = oilTempCommand.getFormattedResult();
+//
+//                ConsumptionRateCommand consumptionRateCommand = new ConsumptionRateCommand();
+//                consumptionRateCommand.run(socket.getInputStream(), socket.getOutputStream());
+//                consumption = consumptionRateCommand.getFormattedResult();
+//
+//                FuelLevelCommand fuelLevelCommand = new FuelLevelCommand();
+//                fuelLevelCommand.run(socket.getInputStream(), socket.getOutputStream());
+//                fuelLevel = fuelLevelCommand.getFormattedResult();
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -72,12 +72,12 @@ public class OBD2Fragment extends Fragment {
                 .setText(getString(R.string.speed, speed));
         ((TextView) view.findViewById(R.id.txt_rpm))
                 .setText(getString(R.string.rpm, rpm));
-        ((TextView) view.findViewById(R.id.txt_oiltemp))
-                .setText(getString(R.string.oilTemp, oilTemp));
-        ((TextView) view.findViewById(R.id.txt_fuellevel))
-                .setText(getString(R.string.fuelLevel, fuelLevel));
-        ((TextView) view.findViewById(R.id.txt_consumption))
-                .setText(getString(R.string.consumption, consumption));
+//        ((TextView) view.findViewById(R.id.txt_oiltemp))
+//                .setText(getString(R.string.oilTemp, oilTemp));
+//        ((TextView) view.findViewById(R.id.txt_fuellevel))
+//                .setText(getString(R.string.fuelLevel, fuelLevel));
+//        ((TextView) view.findViewById(R.id.txt_consumption))
+//                .setText(getString(R.string.consumption, consumption));
     }
 }
 

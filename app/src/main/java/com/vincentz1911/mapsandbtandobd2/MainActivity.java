@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
@@ -32,42 +31,6 @@ public class MainActivity extends FragmentActivity  {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_big, new MapFragment(), "").commit();
     }
-
-//    public void msg(final String text) {
-//        runOnUiThread(new Runnable() {
-//            public void run() {
-//                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
-//            }
-//        });
-//    }
-
-//    public void checkPermissions() {
-//        int PERMISSION_ALL = 1;
-//        String[] PERMISSIONS = {
-//                Manifest.permission.BLUETOOTH,
-//                Manifest.permission.BLUETOOTH_ADMIN,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.CAMERA
-//        };
-//
-//        if (!hasPermissions(this, PERMISSIONS)) {
-//            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-//        }
-//    }
-//
-//    public static boolean hasPermissions(Context context, String... permissions) {
-//        if (context != null && permissions != null) {
-//            for (String permission : permissions) {
-//                if (ActivityCompat.checkSelfPermission(context, permission)
-//                        != PackageManager.PERMISSION_GRANTED) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
 
     private void initBT() {
         //Gets list of paired devices
@@ -127,6 +90,7 @@ public class MainActivity extends FragmentActivity  {
     }
 
     private void connectBT(String address) {
+        //Connects to OBDII device and opens Fragment
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
