@@ -2,6 +2,7 @@ package com.vincentz1911.mapsandbtandobd2;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.widget.Toast;
 
@@ -9,12 +10,15 @@ import androidx.core.app.ActivityCompat;
 
 class Tools {
 
-    static void msg(final Activity activity, final String text) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
-            }
-        });
+    static void msg(final Context context, final String text) {
+
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+
+//        activity.runOnUiThread(new Runnable() {
+//            public void run() {
+//                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 
     static void checkPermissions(Activity activity) {

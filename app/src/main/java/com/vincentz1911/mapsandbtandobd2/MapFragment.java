@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private Activity activity;
+   // private Activity activity;
     private GoogleMap map;
     private float bearing = 0;
 
@@ -35,7 +35,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup vg, Bundle savedInstanceState) {
         View view = li.inflate(R.layout.fragment_map, vg, false);
-        activity = getActivity();
+        //activity = getActivity();
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) mapFragment.getMapAsync(this);
@@ -45,12 +45,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
-                && activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                && getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Tools.msg(activity, "Permission is required for location");
-            Tools.checkPermissions(activity);
+            Tools.msg(getContext(), "Permission is required for location");
+            Tools.checkPermissions(getActivity());
             return;
         }
 
@@ -65,10 +65,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mUiSettings.setCompassEnabled(true);
         mUiSettings.setMyLocationButtonEnabled(true);
 
-        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        if (lm == null) return;
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
         Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng pos = last != null ? new LatLng(last.getLatitude(), last.getLongitude()) : null;
+        LatLng pos = new LatLng(last.getLatitude(), last.getLongitude());
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -84,11 +84,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             LatLng pos = new LatLng(location.getLatitude(), location.getLongitude());
             bearing = location.getBearing() != 0.0 ? location.getBearing() : bearing;
 
+            // 10 kmt (18 - 3 /6 = 16.5
+            // 110 kmt (18 - 30 /6 = 12
+
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(pos)
-                    .zoom(20 - location.getSpeed() / 6)
+                    .zoom(18 - location.getSpeed() / 6)
                     .bearing(bearing)
-                    .tilt(70)
+                    .tilt(45)
                     .build();
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }

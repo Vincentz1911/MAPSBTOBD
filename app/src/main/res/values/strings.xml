@@ -7,5 +7,6 @@
     <string name="oilTemp">Oil Temp: %s</string>
     <string name="fuelLevel">Fuel: %s</string>
     <string name="consumption">Consumption: %s</string>
+    <string name="time">%s</string>
 
 </resources>
