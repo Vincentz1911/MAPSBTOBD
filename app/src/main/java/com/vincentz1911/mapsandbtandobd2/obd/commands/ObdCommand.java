@@ -235,7 +235,7 @@ public abstract class ObdCommand {
         rawData = removeAll(WHITESPACE_PATTERN, rawData);//removes all [ \t\n\x0B\f\r]
     }
 
-    void checkForErrors() {
+    private void checkForErrors() {
         for (Class<? extends ResponseException> errorClass : ERROR_CLASSES) {
             ResponseException messageError;
 
