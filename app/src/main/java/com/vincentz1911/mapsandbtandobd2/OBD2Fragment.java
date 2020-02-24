@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -35,6 +36,13 @@ public class OBD2Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup vg, Bundle savedInstanceState) {
         View view = li.inflate(R.layout.fragment_obd2, vg, false);
+
+        ((Button)view.findViewById(R.id.btn_ison)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isOn=true;
+            }
+        });
 
         OBDDataThread = new Thread(() -> {
             if (socket != null && socket.isConnected()) {
