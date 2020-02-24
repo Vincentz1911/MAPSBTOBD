@@ -67,28 +67,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng pos = new LatLng(last.getLatitude(), last.getLongitude());
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+        try {
+            Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            LatLng pos = new LatLng(last.getLatitude(), last.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
+        } catch (Exception e) {}
+
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 2000, 3, GPSlistener);
 
     }
 
+    LatLng pos;
     private LocationListener GPSlistener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             if (location == null) return;
+            LatLng oldPos = pos;
 
-            LatLng pos = new LatLng(location.getLatitude(), location.getLongitude());
+            pos = new LatLng(location.getLatitude(), location.getLongitude());
             bearing = location.getBearing() != 0.0 ? location.getBearing() : bearing;
 
+            LatLng difPos = new LatLng(pos.latitude - oldPos.latitude, pos.longitude - oldPos.longitude);
+
+            LatLng camPos = new LatLng(pos.latitude -difPos.latitude * location.getSpeed(), pos.longitude -difPos.longitude * location.getSpeed());
+            //b = 0 / 180 = 0 -1 = -1
+            //b = 90 / 180 = 0.5 -1 = -0.5
+            //b = 180 / 180 = 1 -1 = 0
+            //b = 270 / 180 = 1.5 -1 = 0.5
+
+
+
+//            long bear = bearing / 180
+//            LatLng camPos = pos.latitude
             // 10 kmt (18 - 3 /6 = 16.5
             // 110 kmt (18 - 30 /6 = 12
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(pos)
+                    .target(camPos)
                     .zoom(18 - location.getSpeed() / 6)
                     .bearing(bearing)
                     .tilt(45)

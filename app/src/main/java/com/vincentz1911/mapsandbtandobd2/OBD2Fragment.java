@@ -30,33 +30,33 @@ public class OBD2Fragment extends Fragment {
     private String speed, rpm, fuelLevel, oilTemp, consumption;
     private Thread OBDDataThread;
     private BluetoothSocket socket = null;
+    private boolean isOn;
 
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup vg, Bundle savedInstanceState) {
         View view = li.inflate(R.layout.fragment_obd2, vg, false);
 
-        OBDDataThread = new Thread(new Runnable() {
-            public void run() {
-                if (socket != null && socket.isConnected()) {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        try {
-                            Thread.sleep(500);
-                            RPMCommand engineRpmCommand = new RPMCommand();
-                            engineRpmCommand.run(socket.getInputStream(), socket.getOutputStream());
-                            rpm = engineRpmCommand.getFormattedResult();
+        OBDDataThread = new Thread(() -> {
+            if (socket != null && socket.isConnected()) {
+                if (isOn)
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        Thread.sleep(500);
+                        RPMCommand engineRpmCommand = new RPMCommand();
+                        engineRpmCommand.run(socket.getInputStream(), socket.getOutputStream());
+                        rpm = engineRpmCommand.getFormattedResult();
 
-                            SpeedCommand speedCommand = new SpeedCommand();
-                            speedCommand.run(socket.getInputStream(), socket.getOutputStream());
-                            speed = speedCommand.getFormattedResult();
-                        } catch (IOException | InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        SpeedCommand speedCommand = new SpeedCommand();
+                        speedCommand.run(socket.getInputStream(), socket.getOutputStream());
+                        speed = speedCommand.getFormattedResult();
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         });
 
-        new Thread(new Runnable() {public void run() { initBT(); }}).start();
+        new Thread(() -> initBT()).start();
 
         //initBT();
 
@@ -147,6 +147,8 @@ public class OBD2Fragment extends Fragment {
             Tools.msg(getActivity(), "Couldn't connect to ELM327 Bluetooth ODBII adapter");
             e.printStackTrace();
         }
+
+
 
         OBDDataThread.start();
     }
