@@ -8,18 +8,23 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 class Tools {
 
     static void msg(final Context context, final String text) {
-
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-
-//        activity.runOnUiThread(new Runnable() {
-//            public void run() {
-//                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-//            }
-//        });
+//        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+        Activity activity = (Activity) context;
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
+    static SimpleDateFormat dateFormat = new SimpleDateFormat(
+            "HH:mm:ss dd/MM/yyyy ", Locale.getDefault());
 
     static void checkPermissions(Activity activity) {
         int PERMISSION_ALL = 1;
@@ -48,5 +53,4 @@ class Tools {
         }
         return true;
     }
-
 }
