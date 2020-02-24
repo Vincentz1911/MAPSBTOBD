@@ -1,8 +1,8 @@
 package com.vincentz1911.mapsandbtandobd2;
 
-
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -54,10 +54,47 @@ import java.util.concurrent.CountDownLatch;
 
 public class SpotifyFragment extends Fragment {
 
+    private static final String TAG = "SPOTIFY TAG";
+
+    private static final String CLIENT_ID = "51f679e062be42a490b49754fcf073d8";
+    private static final String REDIRECT_URI = "MapsandBTandOBD2://callback";
+
+    private static final String TRACK_URI = "spotify:track:4IWZsfEkaK49itBwCTFDXQ";
+    private static final String ALBUM_URI = "spotify:album:4nZ5wPL5XxSY2OuDgbnYdc";
+    private static final String ARTIST_URI = "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2";
+    private static final String PLAYLIST_URI = "spotify:playlist:37i9dQZEVXbMDoHDwVN2tF";
+    private static final String PODCAST_URI = "spotify:show:2tgPYIeGErjk6irHRhk9kj";
+
+    private static SpotifyAppRemote mSpotifyAppRemote;
+
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    Button mConnectButton, mConnectAuthorizeButton;
+    Button mSubscribeToPlayerContextButton;
+    Button mPlayerContextButton;
+    Button mSubscribeToPlayerStateButton;
+    Button mPlayerStateButton;
+    ImageView mCoverArtImageView;
+    AppCompatTextView mImageLabel;
+    AppCompatTextView mImageScaleTypeLabel;
+    AppCompatImageButton mToggleShuffleButton;
+    AppCompatImageButton mPlayPauseButton;
+    AppCompatImageButton mToggleRepeatButton;
+    AppCompatSeekBar mSeekBar;
+    AppCompatImageButton mPlaybackSpeedButton;
+
+    List<View> mViews;
+    TrackProgressBar mTrackProgressBar;
+
+    Subscription<PlayerState> mPlayerStateSubscription;
+    Subscription<PlayerContext> mPlayerContextSubscription;
+    Subscription<Capabilities> mCapabilitiesSubscription;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.app_remote_layout, container, false);
+        View view = inflater.inflate(R.layout.fragment_spotify, container, false);
 
 
         mConnectButton = view.findViewById(R.id.connect_button);
@@ -116,41 +153,6 @@ public class SpotifyFragment extends Fragment {
         return view;
     }
 
-    private static final String TAG = "SPOTIFY TAG";
-
-    private static final String CLIENT_ID = "51f679e062be42a490b49754fcf073d8";
-    private static final String REDIRECT_URI = "MapsandBTandOBD2://callback";
-
-    private static final String TRACK_URI = "spotify:track:4IWZsfEkaK49itBwCTFDXQ";
-    private static final String ALBUM_URI = "spotify:album:4nZ5wPL5XxSY2OuDgbnYdc";
-    private static final String ARTIST_URI = "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2";
-    private static final String PLAYLIST_URI = "spotify:playlist:37i9dQZEVXbMDoHDwVN2tF";
-    private static final String PODCAST_URI = "spotify:show:2tgPYIeGErjk6irHRhk9kj";
-
-    private static SpotifyAppRemote mSpotifyAppRemote;
-
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-    Button mConnectButton, mConnectAuthorizeButton;
-    Button mSubscribeToPlayerContextButton;
-    Button mPlayerContextButton;
-    Button mSubscribeToPlayerStateButton;
-    Button mPlayerStateButton;
-    ImageView mCoverArtImageView;
-    AppCompatTextView mImageLabel;
-    AppCompatTextView mImageScaleTypeLabel;
-    AppCompatImageButton mToggleShuffleButton;
-    AppCompatImageButton mPlayPauseButton;
-    AppCompatImageButton mToggleRepeatButton;
-    AppCompatSeekBar mSeekBar;
-    AppCompatImageButton mPlaybackSpeedButton;
-
-    List<View> mViews;
-    SpotifyFragment.TrackProgressBar mTrackProgressBar;
-
-    Subscription<PlayerState> mPlayerStateSubscription;
-    Subscription<PlayerContext> mPlayerContextSubscription;
-    Subscription<Capabilities> mCapabilitiesSubscription;
 
     private final ErrorCallback mErrorCallback = this::logError;
 
@@ -370,7 +372,13 @@ public class SpotifyFragment extends Fragment {
         mSubscribeToPlayerStateButton.setVisibility(View.VISIBLE);
     }
 
-    public void onConnectClicked(View v) {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    public void onConnectClicked(View view) {
         onConnecting();
         connect(false);
     }
@@ -385,7 +393,7 @@ public class SpotifyFragment extends Fragment {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
 
         SpotifyAppRemote.connect(
-                getActivity().getApplication(),
+                getContext(),
                 new ConnectionParams.Builder(CLIENT_ID)
                         .setRedirectUri(REDIRECT_URI)
                         .showAuthView(showAuthView)

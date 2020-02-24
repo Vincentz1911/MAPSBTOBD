@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-   // private Activity activity;
+    // private Activity activity;
     private GoogleMap map;
     private float bearing = 0;
 
@@ -71,36 +71,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             LatLng pos = new LatLng(last.getLatitude(), last.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 10));
-        } catch (Exception e) {}
-
+        } catch (Exception e) {
+        }
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 2000, 3, GPSlistener);
-
     }
 
-    LatLng pos;
+    LatLng pos, camPos;
     private LocationListener GPSlistener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             if (location == null) return;
             LatLng oldPos = pos;
-
             pos = new LatLng(location.getLatitude(), location.getLongitude());
             bearing = location.getBearing() != 0.0 ? location.getBearing() : bearing;
 
-            LatLng difPos = new LatLng(pos.latitude - oldPos.latitude, pos.longitude - oldPos.longitude);
+            // 8
+            //pos 10 - old 12 = - 2 * speed
+            if (oldPos == null) camPos = pos;
+            else { camPos = new LatLng(
+                        (pos.latitude + (pos.latitude - oldPos.latitude) * location.getSpeed()),
+                        (pos.longitude + (pos.longitude - oldPos.longitude) * location.getSpeed()));
+            }
 
-            LatLng camPos = new LatLng(pos.latitude -difPos.latitude * location.getSpeed(), pos.longitude -difPos.longitude * location.getSpeed());
-            //b = 0 / 180 = 0 -1 = -1
-            //b = 90 / 180 = 0.5 -1 = -0.5
-            //b = 180 / 180 = 1 -1 = 0
-            //b = 270 / 180 = 1.5 -1 = 0.5
-
-
-
-//            long bear = bearing / 180
-//            LatLng camPos = pos.latitude
             // 10 kmt (18 - 3 /6 = 16.5
             // 110 kmt (18 - 30 /6 = 12
 
@@ -114,10 +108,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) { }
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
         @Override
-        public void onProviderEnabled(String provider) { }
+        public void onProviderEnabled(String provider) {
+        }
+
         @Override
-        public void onProviderDisabled(String provider) { }
+        public void onProviderDisabled(String provider) {
+        }
     };
 }

@@ -44,27 +44,35 @@ public class OBD2Fragment extends Fragment {
             }
         });
 
-        OBDDataThread = new Thread(() -> {
-            if (socket != null && socket.isConnected()) {
-                if (isOn)
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        Thread.sleep(500);
-                        RPMCommand engineRpmCommand = new RPMCommand();
-                        engineRpmCommand.run(socket.getInputStream(), socket.getOutputStream());
-                        rpm = engineRpmCommand.getFormattedResult();
+        OBDDataThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (socket != null && socket.isConnected()) {
+                    if (isOn)
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try {
+                                Thread.sleep(500);
+                                RPMCommand engineRpmCommand = new RPMCommand();
+                                engineRpmCommand.run(socket.getInputStream(), socket.getOutputStream());
+                                rpm = engineRpmCommand.getFormattedResult();
 
-                        SpeedCommand speedCommand = new SpeedCommand();
-                        speedCommand.run(socket.getInputStream(), socket.getOutputStream());
-                        speed = speedCommand.getFormattedResult();
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                                SpeedCommand speedCommand = new SpeedCommand();
+                                speedCommand.run(socket.getInputStream(), socket.getOutputStream());
+                                speed = speedCommand.getFormattedResult();
+                            } catch (IOException | InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
                 }
             }
         });
 
-        new Thread(() -> initBT()).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OBD2Fragment.this.initBT();
+            }
+        }).start();
 
         //initBT();
 
