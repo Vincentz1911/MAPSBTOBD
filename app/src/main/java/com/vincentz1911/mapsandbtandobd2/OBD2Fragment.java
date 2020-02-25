@@ -104,7 +104,6 @@ public class OBD2Fragment extends Fragment {
             Tools.msg(getContext(), "No paired devices found");
             return;
         }
-
         //Checks if device is named OBDII and connects
         for (BluetoothDevice device : paired) {
             if (device.getName().toUpperCase().equals("OBDII")) {

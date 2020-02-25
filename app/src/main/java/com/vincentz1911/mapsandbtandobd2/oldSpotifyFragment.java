@@ -52,8 +52,6 @@ public class oldSpotifyFragment extends Fragment {
 
     private static SpotifyAppRemote mSpotifyAppRemote;
 
-
-
     private static final String TRACK_URI = "spotify:track:4IWZsfEkaK49itBwCTFDXQ";
     private static final String ALBUM_URI = "spotify:album:4nZ5wPL5XxSY2OuDgbnYdc";
     private static final String ARTIST_URI = "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2";
@@ -715,9 +713,7 @@ public class oldSpotifyFragment extends Fragment {
         mPlayerStateButton.setVisibility(View.VISIBLE);
         mSubscribeToPlayerStateButton.setVisibility(View.INVISIBLE);
 
-        mPlayerStateSubscription =
-                (Subscription<PlayerState>)
-                        mSpotifyAppRemote
+        mPlayerStateSubscription = (Subscription<PlayerState>) mSpotifyAppRemote
                                 .getPlayerApi()
                                 .subscribeToPlayerState()
                                 .setEventCallback(mPlayerStateEventCallback)
